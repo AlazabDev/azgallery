@@ -13,7 +13,7 @@ const projectQuery = (slug: string) =>
   });
 
 export const Route = createFileRoute("/project/$slug")({
-  head: ({ loaderData }) => {
+  head: ({ loaderData }: { loaderData?: Awaited<ReturnType<typeof getProject>> }) => {
     const name = loaderData?.project?.name ?? "مشروع";
     return {
       meta: [
