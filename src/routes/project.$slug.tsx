@@ -129,7 +129,7 @@ function GalleryPanel({
   return (
     <div className="space-y-4">
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
-        <div ref={imgWrapRef} className="relative aspect-[16/10] overflow-hidden bg-black">
+        <div ref={imgWrapRef} data-pick-target="active-image" className="relative aspect-[16/10] overflow-hidden bg-black">
           <img
             src={active.image_url}
             alt={active.caption ?? ""}
