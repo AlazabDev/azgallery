@@ -122,13 +122,17 @@ export const addComment = createServerFn({ method: "POST" })
     // Verify image belongs to project & public
     const { data: img } = await supabaseAdmin
       .from("project_images")
-      .select("id, project_id, projects!inner(is_public)")
+      .select("id, project_id")
       .eq("id", data.imageId)
       .eq("project_id", data.projectId)
       .maybeSingle();
     if (!img) throw new Error("صورة غير صالحة");
-    // @ts-expect-error nested
-    if (!img.projects?.is_public) throw new Error("المشروع غير متاح");
+    const { data: proj } = await supabaseAdmin
+      .from("projects")
+      .select("is_public")
+      .eq("id", data.projectId)
+      .maybeSingle();
+    if (!proj?.is_public) throw new Error("المشروع غير متاح");
 
     const hasPos =
       typeof data.positionX === "number" && typeof data.positionY === "number";
