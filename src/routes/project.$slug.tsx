@@ -178,9 +178,21 @@ function GalleryPanel({
             <ChevronLeft className="size-5" />
           </button>
 
-          <div className="absolute top-3 right-3 rounded-md bg-black/60 px-2.5 py-1 text-xs text-white backdrop-blur">
-            {activeIdx + 1} / {images.length}
+          <div className="absolute top-3 right-3 flex items-center gap-2">
+            <div className="rounded-md bg-black/60 px-2.5 py-1 text-xs text-white backdrop-blur">
+              {activeIdx + 1} / {images.length}
+            </div>
+            {active.phase && (
+              <div className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-bold text-white shadow-elevated ${PHASE_COLORS[active.phase] ?? "bg-primary"}`}>
+                {active.phase}
+              </div>
+            )}
           </div>
+          {active.captured_at && (
+            <div className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-md bg-black/60 px-2.5 py-1 text-xs text-white backdrop-blur">
+              <Calendar className="size-3.5" /> {formatDate(active.captured_at)}
+            </div>
+          )}
           <button
             onClick={openLightGallery}
             className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-md bg-black/60 px-2.5 py-1 text-xs text-white backdrop-blur transition hover:bg-black/80"
