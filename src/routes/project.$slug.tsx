@@ -101,7 +101,7 @@ function ProjectPage() {
   );
 }
 
-type Img = { id: string; image_url: string; caption: string | null; sort_order: number };
+type Img = { id: string; image_url: string; caption: string | null; sort_order: number; captured_at: string | null; phase: string | null };
 
 function GalleryPanel({
   images,
