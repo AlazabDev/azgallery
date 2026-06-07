@@ -66,8 +66,9 @@ export const getProject = createServerFn({ method: "GET" })
 
     const { data: images } = await supabaseAdmin
       .from("project_images")
-      .select("id, image_url, caption, sort_order")
+      .select("id, image_url, caption, sort_order, captured_at, phase")
       .eq("project_id", project.id)
+      .order("captured_at", { ascending: true, nullsFirst: false })
       .order("sort_order", { ascending: true });
 
     const { data: comments } = await supabaseAdmin
