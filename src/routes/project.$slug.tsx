@@ -4,7 +4,22 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getProject, getImageComments, addComment } from "@/lib/gallery.functions";
 import { getVisitorSession, getStoredVisitor, saveVisitor } from "@/lib/visitor-session";
-import { ChevronRight, ChevronLeft, MessageSquare, MapPin, Expand, MapPinned, Send, X, ArrowRight } from "lucide-react";
+import { ChevronRight, ChevronLeft, MessageSquare, MapPin, Expand, MapPinned, Send, X, ArrowRight, Calendar, Clock } from "lucide-react";
+
+const PHASE_ORDER = ["البداية", "التنفيذ", "التشطيب", "التسليم"] as const;
+const PHASE_COLORS: Record<string, string> = {
+  "البداية": "bg-blue-500",
+  "التنفيذ": "bg-amber-500",
+  "التشطيب": "bg-purple-500",
+  "التسليم": "bg-emerald-500",
+};
+
+function formatDate(iso: string | null) {
+  if (!iso) return "";
+  try {
+    return new Date(iso).toLocaleDateString("ar-EG", { year: "numeric", month: "long", day: "numeric" });
+  } catch { return ""; }
+}
 
 const projectQuery = (slug: string) =>
   queryOptions({
@@ -86,7 +101,7 @@ function ProjectPage() {
   );
 }
 
-type Img = { id: string; image_url: string; caption: string | null; sort_order: number };
+type Img = { id: string; image_url: string; caption: string | null; sort_order: number; captured_at: string | null; phase: string | null };
 
 function GalleryPanel({
   images,
@@ -163,9 +178,21 @@ function GalleryPanel({
             <ChevronLeft className="size-5" />
           </button>
 
-          <div className="absolute top-3 right-3 rounded-md bg-black/60 px-2.5 py-1 text-xs text-white backdrop-blur">
-            {activeIdx + 1} / {images.length}
+          <div className="absolute top-3 right-3 flex items-center gap-2">
+            <div className="rounded-md bg-black/60 px-2.5 py-1 text-xs text-white backdrop-blur">
+              {activeIdx + 1} / {images.length}
+            </div>
+            {active.phase && (
+              <div className={`inline-flex items-center gap-1 rounded-md px-2.5 py-1 text-xs font-bold text-white shadow-elevated ${PHASE_COLORS[active.phase] ?? "bg-primary"}`}>
+                {active.phase}
+              </div>
+            )}
           </div>
+          {active.captured_at && (
+            <div className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 rounded-md bg-black/60 px-2.5 py-1 text-xs text-white backdrop-blur">
+              <Calendar className="size-3.5" /> {formatDate(active.captured_at)}
+            </div>
+          )}
           <button
             onClick={openLightGallery}
             className="absolute top-3 left-3 inline-flex items-center gap-1.5 rounded-md bg-black/60 px-2.5 py-1 text-xs text-white backdrop-blur transition hover:bg-black/80"
@@ -181,24 +208,81 @@ function GalleryPanel({
         )}
       </div>
 
-      {/* Thumbnails */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
-        {images.map((img, idx) => (
-          <button
-            key={img.id}
-            onClick={() => setActiveIdx(idx)}
-            className={`relative h-20 w-28 flex-shrink-0 overflow-hidden rounded-lg border-2 transition ${
-              idx === activeIdx ? "border-primary shadow-elevated" : "border-transparent opacity-70 hover:opacity-100"
-            }`}
-          >
-            <img src={img.image_url} alt="" className="h-full w-full object-cover" />
-            {commentsByImage[img.id] > 0 && (
-              <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 rounded-md bg-accent/95 px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">
-                <MessageSquare className="size-2.5" /> {commentsByImage[img.id]}
-              </span>
-            )}
-          </button>
-        ))}
+      {/* Phase timeline progress */}
+      <PhaseTimeline images={images} activeIdx={activeIdx} setActiveIdx={setActiveIdx} />
+
+      {/* Thumbnails grouped by phase */}
+      <div className="space-y-3">
+        {PHASE_ORDER.filter((p) => images.some((i) => i.phase === p)).map((phase) => {
+          const phaseImgs = images.map((img, idx) => ({ img, idx })).filter((x) => x.img.phase === phase);
+          if (phaseImgs.length === 0) return null;
+          return (
+            <div key={phase}>
+              <div className="mb-1.5 flex items-center gap-2">
+                <span className={`inline-block size-2 rounded-full ${PHASE_COLORS[phase]}`} />
+                <span className="text-xs font-bold text-foreground">{phase}</span>
+                <span className="text-xs text-muted-foreground">({phaseImgs.length})</span>
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {phaseImgs.map(({ img, idx }) => (
+                  <button
+                    key={img.id}
+                    onClick={() => setActiveIdx(idx)}
+                    className={`relative h-20 w-28 flex-shrink-0 overflow-hidden rounded-lg border-2 transition ${
+                      idx === activeIdx ? "border-primary shadow-elevated" : "border-transparent opacity-70 hover:opacity-100"
+                    }`}
+                  >
+                    <img src={img.image_url} alt="" className="h-full w-full object-cover" />
+                    {commentsByImage[img.id] > 0 && (
+                      <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 rounded-md bg-accent/95 px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">
+                        <MessageSquare className="size-2.5" /> {commentsByImage[img.id]}
+                      </span>
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function PhaseTimeline({ images, activeIdx, setActiveIdx }: { images: Img[]; activeIdx: number; setActiveIdx: (n: number) => void }) {
+  const present = PHASE_ORDER.filter((p) => images.some((i) => i.phase === p));
+  if (present.length === 0) return null;
+  const activePhase = images[activeIdx]?.phase;
+  const progress = activePhase ? ((present.indexOf(activePhase as any) + 1) / present.length) * 100 : 0;
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-4 shadow-card">
+      <div className="mb-3 flex items-center justify-between text-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1.5 font-semibold text-foreground"><Clock className="size-3.5" /> التتابع الزمني للمشروع</span>
+        <span>{images.length} لقطة</span>
+      </div>
+      <div className="relative">
+        <div className="absolute right-0 left-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-muted" />
+        <div className="absolute right-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-gradient-hero transition-all" style={{ width: `${progress}%` }} />
+        <div className="relative flex items-center justify-between">
+          {present.map((phase) => {
+            const firstIdx = images.findIndex((i) => i.phase === phase);
+            const isActive = activePhase === phase;
+            const isPassed = present.indexOf(phase) <= present.indexOf((activePhase ?? present[0]) as any);
+            return (
+              <button
+                key={phase}
+                onClick={() => firstIdx >= 0 && setActiveIdx(firstIdx)}
+                className="flex flex-col items-center gap-1.5 group"
+              >
+                <span className={`flex size-7 items-center justify-center rounded-full text-[10px] font-bold text-white transition ring-2 ring-card ${
+                  isActive ? `${PHASE_COLORS[phase]} scale-125 shadow-elevated` : isPassed ? PHASE_COLORS[phase] : "bg-muted-foreground/40"
+                }`}>●</span>
+                <span className={`text-[11px] font-semibold transition ${isActive ? "text-foreground" : "text-muted-foreground group-hover:text-foreground"}`}>{phase}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
