@@ -74,25 +74,31 @@ export type Database = {
       project_images: {
         Row: {
           caption: string | null
+          captured_at: string | null
           created_at: string
           id: string
           image_url: string
+          phase: string | null
           project_id: string
           sort_order: number
         }
         Insert: {
           caption?: string | null
+          captured_at?: string | null
           created_at?: string
           id?: string
           image_url: string
+          phase?: string | null
           project_id: string
           sort_order?: number
         }
         Update: {
           caption?: string | null
+          captured_at?: string | null
           created_at?: string
           id?: string
           image_url?: string
+          phase?: string | null
           project_id?: string
           sort_order?: number
         }
