@@ -1,0 +1,1 @@
+REVOKE SELECT (visitor_phone) ON public.image_comments FROM anon, authenticated;
