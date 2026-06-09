@@ -1,0 +1,1 @@
+-- See /tmp/seed/seed2.sql contents inlined below
