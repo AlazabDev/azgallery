@@ -8,6 +8,9 @@ import {
 } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 
+import { AppHeader } from "@/components/AppHeader";
+import { AppFooter } from "@/components/AppFooter";
+
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -89,7 +92,13 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
+      <div className="flex min-h-screen flex-col">
+        <AppHeader />
+        <main className="flex-1">
+          <Outlet />
+        </main>
+        <AppFooter />
+      </div>
     </QueryClientProvider>
   );
 }

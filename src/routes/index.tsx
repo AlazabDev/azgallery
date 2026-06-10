@@ -24,7 +24,8 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="bg-gradient-hero text-primary-foreground">
+      {/* Hero Section */}
+      <section className="bg-gradient-hero text-primary-foreground">
         <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
           <div className="flex items-center gap-3 text-sm opacity-90">
             <div className="rounded-md bg-white/10 px-3 py-1 backdrop-blur">AzGallery</div>
@@ -37,9 +38,10 @@ function HomePage() {
             افتح بطاقة المشروع، تصفّح الصور بدقة عالية، وحدّد الموضع المطلوب لكتابة ملاحظتك — بدون الحاجة لتسجيل دخول.
           </p>
         </div>
-      </header>
+      </section>
 
-      <main className="mx-auto max-w-6xl px-6 py-12">
+      {/* Projects Grid */}
+      <section className="mx-auto max-w-6xl px-6 py-12">
         <div className="mb-8 flex items-end justify-between">
           <div>
             <h2 className="text-2xl font-bold">المشروعات المتاحة</h2>
@@ -60,11 +62,7 @@ function HomePage() {
             ))}
           </div>
         )}
-      </main>
-
-      <footer className="border-t border-border py-8 text-center text-sm text-muted-foreground">
-        © {new Date().getFullYear()} AzGallery
-      </footer>
+      </section>
     </div>
   );
 }
