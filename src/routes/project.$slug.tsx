@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getProject, getImageComments, addComment } from "@/lib/gallery.functions";
 import { getVisitorSession, getStoredVisitor, saveVisitor } from "@/lib/visitor-session";
-import { ChevronRight, ChevronLeft, MessageSquare, MapPin, Expand, MapPinned, Send, X, ArrowRight, Calendar, Clock } from "lucide-react";
+import { ChevronRight, ChevronLeft, MessageSquare, MapPin, Expand, MapPinned, Send, X, ArrowRight, Calendar, Clock, Box, Paperclip, Plus, Link2, FileText, Trash2 } from "lucide-react";
 
 const PHASE_ORDER = ["البداية", "التنفيذ", "التشطيب", "التسليم"] as const;
 const PHASE_COLORS: Record<string, string> = {
