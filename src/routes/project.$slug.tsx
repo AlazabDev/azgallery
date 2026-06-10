@@ -4,7 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { getProject, getImageComments, addComment } from "@/lib/gallery.functions";
 import { getVisitorSession, getStoredVisitor, saveVisitor } from "@/lib/visitor-session";
-import { ChevronRight, ChevronLeft, MessageSquare, MapPin, Expand, MapPinned, Send, X, ArrowRight, Calendar, Clock } from "lucide-react";
+import { ChevronRight, ChevronLeft, MessageSquare, MapPin, Expand, MapPinned, Send, X, ArrowRight, Calendar, Clock, Box, Paperclip, Plus, Link2, FileText, Trash2 } from "lucide-react";
 
 const PHASE_ORDER = ["البداية", "التنفيذ", "التشطيب", "التسليم"] as const;
 const PHASE_COLORS: Record<string, string> = {
@@ -70,15 +70,19 @@ function ProjectPage() {
       </header>
 
       <div className="mx-auto max-w-7xl px-6 py-8">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold">{project.name}</h1>
-          <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-            {project.location && (
-              <span className="inline-flex items-center gap-1"><MapPin className="size-4" /> {project.location}</span>
-            )}
-            <span>{images.length} صورة</span>
+        <div className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-card">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold">{project.name}</h1>
+              <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                {project.location && (
+                  <span className="inline-flex items-center gap-1"><MapPin className="size-4" /> {project.location}</span>
+                )}
+                <span className="inline-flex items-center gap-1"><MessageSquare className="size-4" /> {images.length} صورة</span>
+              </div>
+            </div>
+            {project.description && <p className="max-w-2xl text-sm text-muted-foreground">{project.description}</p>}
           </div>
-          {project.description && <p className="mt-3 max-w-3xl text-muted-foreground">{project.description}</p>}
         </div>
 
         {images.length === 0 ? (
@@ -96,6 +100,11 @@ function ProjectPage() {
             <ReviewPanel image={activeImage} projectId={project.id} />
           </div>
         )}
+
+        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+          <ThreeDViewerCard />
+          <AttachmentsCard />
+        </div>
       </div>
     </div>
   );
