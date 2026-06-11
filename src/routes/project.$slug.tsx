@@ -61,7 +61,7 @@ function ProjectPage() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6">
           <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
             <ArrowRight className="size-4" /> العودة للمشروعات
           </Link>
@@ -69,19 +69,20 @@ function ProjectPage() {
         </div>
       </header>
 
-      <div className="mx-auto max-w-7xl px-6 py-8">
-        <div className="mb-6 rounded-2xl border border-border bg-card p-6 shadow-card">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold">{project.name}</h1>
-              <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+      <div className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
+        {/* Project info card */}
+        <div className="mb-4 rounded-2xl border border-border bg-card p-5 shadow-card md:mb-6 md:p-6">
+          <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-[1fr_auto]">
+            <div className="min-w-0">
+              <h1 className="truncate text-2xl font-bold md:text-3xl">{project.name}</h1>
+              <div className="mt-2 flex flex-wrap items-center gap-3 text-sm text-muted-foreground md:gap-4">
                 {project.location && (
-                  <span className="inline-flex items-center gap-1"><MapPin className="size-4" /> {project.location}</span>
+                  <span className="inline-flex items-center gap-1"><MapPin className="size-4 shrink-0" /> {project.location}</span>
                 )}
-                <span className="inline-flex items-center gap-1"><MessageSquare className="size-4" /> {images.length} صورة</span>
+                <span className="inline-flex items-center gap-1"><MessageSquare className="size-4 shrink-0" /> {images.length} صورة</span>
               </div>
             </div>
-            {project.description && <p className="max-w-2xl text-sm text-muted-foreground">{project.description}</p>}
+            {project.description && <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground lg:text-right">{project.description}</p>}
           </div>
         </div>
 
@@ -90,7 +91,7 @@ function ProjectPage() {
             لا توجد صور في هذا المشروع بعد.
           </div>
         ) : (
-          <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-[1fr_320px] md:gap-6 lg:grid-cols-[1fr_380px] xl:grid-cols-[1fr_420px]">
             <GalleryPanel
               images={images}
               activeIdx={activeIdx}
@@ -101,7 +102,7 @@ function ProjectPage() {
           </div>
         )}
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-2">
+        <div className="mt-4 grid grid-cols-1 gap-4 md:mt-6 md:grid-cols-2 md:gap-6">
           <ThreeDViewerCard />
           <AttachmentsCard />
         </div>
