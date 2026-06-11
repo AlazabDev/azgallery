@@ -60,14 +60,14 @@ function ProjectPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border bg-card">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 md:px-6">
+      <div className="border-b border-border bg-card">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
           <Link to="/" className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-foreground">
             <ArrowRight className="size-4" /> العودة للمشروعات
           </Link>
-          <div className="text-sm font-bold text-primary">AzGallery</div>
         </div>
-      </header>
+      </div>
+
 
       <div className="mx-auto max-w-7xl px-4 py-6 md:px-6 md:py-8">
         {/* Project info card */}

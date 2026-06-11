@@ -41,10 +41,11 @@ export function AppFooter() {
             <h3 className="text-base font-bold text-[#FFB900]">روابط سريعة</h3>
             <ul className="space-y-2.5">
               <FooterLink to="/" label="الرئيسية" />
-              <FooterLink to="/" label="المشروعات" />
-              <FooterLink to="/" label="الملاحظات المفتوحة" />
-              <FooterLink to="/" label="لوحة الإدارة" />
+              <FooterLink to="/projects" label="المشروعات" />
+              <FooterLink to="/notes" label="الملاحظات المفتوحة" />
+              <FooterLink to="/admin" label="لوحة الإدارة" />
             </ul>
+
           </div>
 
           {/* Contact */}
@@ -104,9 +105,10 @@ export function AppFooter() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-white/50 md:flex-row md:px-6">
           <p>© {new Date().getFullYear()} AzGallery — شركة العزب للمقاولات. جميع الحقوق محفوظة.</p>
           <div className="flex items-center gap-4">
-            <a href="#" className="transition hover:text-[#FFB900]">سياسة الخصوصية</a>
-            <a href="#" className="transition hover:text-[#FFB900]">شروط الاستخدام</a>
+            <Link to="/privacy" className="transition hover:text-[#FFB900]">سياسة الخصوصية</Link>
+            <Link to="/terms" className="transition hover:text-[#FFB900]">شروط الاستخدام</Link>
           </div>
+
         </div>
       </div>
     </footer>
