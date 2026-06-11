@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useRouter } from "@tanstack/react-router";
-import { Search, Menu, X, Home, Images, MessageSquare, Phone, Mail } from "lucide-react";
+import { Search, Menu, X, Home, Images, MessageSquare, Shield } from "lucide-react";
 
 export function AppHeader() {
   const [query, setQuery] = useState("");
@@ -10,7 +10,7 @@ export function AppHeader() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (query.trim()) {
-      router.navigate({ to: "/", search: { q: query.trim() } });
+      router.navigate({ to: "/projects", search: { q: query.trim() } });
     }
   };
 
@@ -45,9 +45,11 @@ export function AppHeader() {
         {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-1">
           <NavLink to="/" icon={<Home className="h-4 w-4" />} label="الرئيسية" />
-          <NavLink to="/" icon={<Images className="h-4 w-4" />} label="المشروعات" />
-          <NavLink to="/" icon={<MessageSquare className="h-4 w-4" />} label="الملاحظات" />
+          <NavLink to="/projects" icon={<Images className="h-4 w-4" />} label="المشروعات" />
+          <NavLink to="/notes" icon={<MessageSquare className="h-4 w-4" />} label="الملاحظات" />
+          <NavLink to="/admin" icon={<Shield className="h-4 w-4" />} label="الإدارة" />
         </nav>
+
 
         {/* Mobile Toggle */}
         <button
@@ -75,9 +77,11 @@ export function AppHeader() {
           </form>
           <div className="flex flex-col gap-1">
             <MobileNavLink to="/" icon={<Home className="h-4 w-4" />} label="الرئيسية" onClick={() => setMobileMenuOpen(false)} />
-            <MobileNavLink to="/" icon={<Images className="h-4 w-4" />} label="المشروعات" onClick={() => setMobileMenuOpen(false)} />
-            <MobileNavLink to="/" icon={<MessageSquare className="h-4 w-4" />} label="الملاحظات" onClick={() => setMobileMenuOpen(false)} />
+            <MobileNavLink to="/projects" icon={<Images className="h-4 w-4" />} label="المشروعات" onClick={() => setMobileMenuOpen(false)} />
+            <MobileNavLink to="/notes" icon={<MessageSquare className="h-4 w-4" />} label="الملاحظات" onClick={() => setMobileMenuOpen(false)} />
+            <MobileNavLink to="/admin" icon={<Shield className="h-4 w-4" />} label="الإدارة" onClick={() => setMobileMenuOpen(false)} />
           </div>
+
         </div>
       )}
     </header>
