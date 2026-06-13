@@ -70,9 +70,47 @@
 .lg-backdrop { background-color: #0a0a0a !important; }
 .lg-sub-html { font-family: var(--font-sans) !important; direction: rtl; }
 
+/* Hero animated background utilities */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(-20px) translateX(10px); }
+  66% { transform: translateY(10px) translateX(-10px); }
+}
+
+@keyframes float-reverse {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33% { transform: translateY(20px) translateX(-10px); }
+  66% { transform: translateY(-10px) translateX(10px); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.15); }
+}
+
+@keyframes particle-rise {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 0.6; }
+  100% { transform: translateY(-120px) scale(0.5); opacity: 0; }
+}
+
 @layer utilities {
   .bg-gradient-hero { background: var(--gradient-hero); }
   .bg-gradient-accent { background: var(--gradient-accent); }
   .shadow-card { box-shadow: var(--shadow-card); }
   .shadow-elevated { box-shadow: var(--shadow-elevated); }
+  .animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradient-shift 8s ease infinite;
+  }
+  .animate-float { animation: float 12s ease-in-out infinite; }
+  .animate-float-reverse { animation: float-reverse 14s ease-in-out infinite; }
+  .animate-pulse-glow { animation: pulse-glow 6s ease-in-out infinite; }
 }

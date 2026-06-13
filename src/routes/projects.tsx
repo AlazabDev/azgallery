@@ -92,10 +92,23 @@ function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-hero text-primary-foreground">
-        <div className="absolute -top-24 -left-24 size-72 rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute -bottom-32 -right-16 size-80 rounded-full bg-accent/30 blur-3xl" />
+      {/* Hero with animated background */}
+      <section className="relative overflow-hidden bg-gradient-hero animate-gradient-shift text-primary-foreground">
+        {/* Animated floating orbs */}
+        <div className="absolute -top-24 -left-24 size-72 rounded-full bg-white/10 blur-3xl animate-float" />
+        <div className="absolute -bottom-32 -right-16 size-80 rounded-full bg-accent/30 blur-3xl animate-float-reverse" />
+        <div className="absolute top-1/2 left-1/3 size-64 rounded-full bg-white/5 blur-3xl animate-pulse-glow" />
+        <div className="absolute bottom-10 left-10 size-48 rounded-full bg-primary/20 blur-2xl animate-float" style={{ animationDelay: '2s' }} />
+
+        {/* Subtle dot pattern overlay */}
+        <div
+          className="absolute inset-0 opacity-10"
+          style={{
+            backgroundImage: `radial-gradient(circle, currentColor 1px, transparent 1px)`,
+            backgroundSize: '24px 24px',
+          }}
+        />
+
         <div className="relative mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
           <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs backdrop-blur">
             <Sparkles className="size-3.5" /> معرض المشروعات الاحترافي
