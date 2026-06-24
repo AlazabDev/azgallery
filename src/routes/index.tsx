@@ -1,7 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { listProjects } from "@/lib/gallery.functions";
-import { Images, MessageSquare, MapPin, ArrowLeft } from "lucide-react";
+import { Images, MessageSquare, MapPin, ArrowLeft, Play, Building2, ShieldCheck } from "lucide-react";
+import heroVideo from "@/assets/hero-construction.mp4.asset.json";
 
 const projectsQuery = queryOptions({
   queryKey: ["projects"],
@@ -24,19 +25,76 @@ function HomePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <section className="bg-gradient-hero text-primary-foreground">
-        <div className="mx-auto max-w-6xl px-6 py-16 md:py-24">
-          <div className="flex items-center gap-3 text-sm opacity-90">
-            <div className="rounded-md bg-white/10 px-3 py-1 backdrop-blur">AzGallery</div>
-            <span className="text-white/70">معرض مراجعة مشروعات العزب</span>
+      {/* Hero Section — cinematic video background */}
+      <section className="relative isolate overflow-hidden text-primary-foreground">
+        {/* Video layer */}
+        <video
+          className="absolute inset-0 -z-20 h-full w-full object-cover"
+          src={heroVideo.url}
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster=""
+          aria-hidden="true"
+        />
+        {/* Gradient overlay matching brand identity (navy → amber accent) */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-bl from-[oklch(0.18_0.05_250/0.92)] via-[oklch(0.22_0.06_240/0.78)] to-[oklch(0.30_0.12_60/0.55)]" />
+        <div className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_top_right,_oklch(0.72_0.16_60/0.25),_transparent_60%)]" />
+
+        <div className="mx-auto grid max-w-6xl gap-10 px-6 py-20 md:grid-cols-[1.4fr,1fr] md:py-32">
+          <div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-medium backdrop-blur-md">
+              <span className="inline-block size-2 rounded-full bg-accent animate-pulse-glow" />
+              AzGallery — معرض مراجعة مشروعات العزب
+            </div>
+            <h1 className="mt-6 text-4xl font-extrabold leading-[1.15] tracking-tight md:text-6xl">
+              نبني الثقة بصورة <span className="text-accent">واضحة</span>،
+              <br className="hidden md:block" />
+              ونراجع التفاصيل <span className="text-accent">بدقة</span>.
+            </h1>
+            <p className="mt-5 max-w-xl text-base leading-relaxed text-white/85 md:text-lg">
+              تصفّح بطاقات مشروعات العزب، افتح المعرض بدقة عالية، وحدّد الموضع المطلوب لإضافة ملاحظاتك — بدون تسجيل دخول.
+            </p>
+
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <a
+                href="#projects"
+                className="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-bold text-accent-foreground shadow-elevated transition hover:-translate-y-0.5 hover:brightness-110"
+              >
+                <Play className="size-4" /> استعراض المشروعات
+              </a>
+              <Link
+                to="/projects"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/25 bg-white/5 px-6 py-3 text-sm font-semibold text-white backdrop-blur-md transition hover:bg-white/15"
+              >
+                المعرض الكامل <ArrowLeft className="size-4" />
+              </Link>
+            </div>
+
+            {/* Trust strip */}
+            <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-white/80">
+              <div className="flex items-center gap-2"><Building2 className="size-4 text-accent" /> {data.projects.length}+ مشروع</div>
+              <div className="flex items-center gap-2"><ShieldCheck className="size-4 text-accent" /> مراجعة بدون حساب</div>
+              <div className="flex items-center gap-2"><Images className="size-4 text-accent" /> صور بدقة عالية</div>
+            </div>
           </div>
-          <h1 className="mt-6 text-4xl font-bold leading-tight md:text-5xl">
-            راجِع مشروعات العزب وأضِف ملاحظاتك على أي جزء من الصورة.
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-white/85">
-            افتح بطاقة المشروع، تصفّح الصور بدقة عالية، وحدّد الموضع المطلوب لكتابة ملاحظتك — بدون الحاجة لتسجيل دخول.
-          </p>
+
+          {/* Right-side glass card */}
+          <div className="relative hidden md:block">
+            <div className="absolute -inset-4 rounded-3xl bg-gradient-to-tr from-accent/30 to-primary/30 blur-2xl" />
+            <div className="relative rounded-3xl border border-white/20 bg-white/10 p-6 backdrop-blur-xl">
+              <div className="text-xs uppercase tracking-widest text-white/70">حالة المعرض</div>
+              <div className="mt-2 text-3xl font-bold">{data.projects.length} مشروع</div>
+              <div className="mt-1 text-sm text-white/75">جاهز للمراجعة الآن</div>
+              <div className="my-5 h-px bg-white/15" />
+              <ul className="space-y-3 text-sm text-white/90">
+                <li className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-accent" /> صور عالية الجودة لكل مشروع</li>
+                <li className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-accent" /> تعليقات مرتبطة بموضع الصورة</li>
+                <li className="flex items-center gap-2"><span className="size-1.5 rounded-full bg-accent" /> عرض ثلاثي الأبعاد للمشروعات</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </section>
 
