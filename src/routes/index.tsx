@@ -99,7 +99,7 @@ function HomePage() {
       </section>
 
       {/* Projects Grid */}
-      <section className="mx-auto max-w-6xl px-6 py-12">
+      <section id="projects" className="mx-auto max-w-6xl px-6 py-12">
         <div className="mb-8 flex items-end justify-between">
           <div>
             <h2 className="text-2xl font-bold">المشروعات المتاحة</h2>
