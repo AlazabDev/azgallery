@@ -4,7 +4,6 @@ type CommentNotificationPayload = {
     id: string;
     text: string;
     visitor_name: string;
-    visitor_phone: string | null;
     position_x: number | null;
     position_y: number | null;
     created_at: string;
