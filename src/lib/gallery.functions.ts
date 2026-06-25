@@ -142,7 +142,7 @@ export const addComment = createServerFn({ method: "POST" })
 
     const { data: img, error: imgError } = await supabaseAdmin
       .from("project_images")
-      .select("id, project_id")
+      .select("id, project_id, image_url, caption")
       .eq("id", data.imageId)
       .eq("project_id", data.projectId)
       .maybeSingle();
@@ -151,7 +151,7 @@ export const addComment = createServerFn({ method: "POST" })
 
     const { data: proj, error: projError } = await supabaseAdmin
       .from("projects")
-      .select("is_public")
+      .select("id, slug, name, is_public")
       .eq("id", data.projectId)
       .maybeSingle();
     if (projError) publicError("Unable to verify project.", projError);
@@ -175,5 +175,29 @@ export const addComment = createServerFn({ method: "POST" })
       .select("id, visitor_name, comment_text, position_x, position_y, status, created_at")
       .single();
     if (error) publicError("Unable to save comment.", error);
+
+    const { notifyCommentCreated } = await import("@/lib/comment-notifications.server");
+    await notifyCommentCreated({
+      comment: {
+        id: inserted.id,
+        text: inserted.comment_text,
+        visitor_name: inserted.visitor_name,
+        position_x: inserted.position_x,
+        position_y: inserted.position_y,
+        created_at: inserted.created_at,
+      },
+      project: {
+        id: proj.id,
+        slug: proj.slug,
+        name: proj.name,
+        url: "",
+      },
+      image: {
+        id: img.id,
+        url: img.image_url,
+        caption: img.caption,
+      },
+    });
+
     return { comment: inserted };
   });
