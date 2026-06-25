@@ -129,6 +129,12 @@ chmod o+x "$APP_DIR" || true
 find "$CLIENT_DIR" -type d -exec chmod 755 {} \;
 find "$CLIENT_DIR" -type f -exec chmod 644 {} \;
 
+log "Close public access to ${PORT}; nginx uses localhost only"
+if command -v ufw >/dev/null 2>&1 && ufw status | grep -q "Status: active"; then
+  ufw delete allow "${PORT}/tcp" 2>/dev/null || true
+  ufw reload || true
+fi
+
 log "Reload nginx"
 nginx -t
 systemctl reload nginx
