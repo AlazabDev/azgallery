@@ -87,11 +87,17 @@ server {
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
     location ~* \\.(js|css|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|json|xml|txt|webmanifest|html)$ {
         try_files \$uri @azgallery_pm2;
         expires 30d;
         access_log off;
-        add_header Cache-Control "public, max-age=2592000, immutable";
+        add_header Cache-Control "public, max-age=2592000, immutable" always;
     }
 
     location / {
