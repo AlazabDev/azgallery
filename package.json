@@ -8,6 +8,10 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
+    "start": "vite preview --host 127.0.0.1 --port ${PORT:-3033}",
+    "pm2:start": "pm2 start ecosystem.config.cjs --update-env",
+    "pm2:restart": "pm2 restart azgallery --update-env",
+    "pm2:logs": "pm2 logs azgallery --lines 120",
     "lint": "eslint .",
     "format": "prettier --write ."
   },
