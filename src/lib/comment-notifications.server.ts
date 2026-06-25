@@ -25,6 +25,11 @@ function getBaseUrl() {
   return process.env.AZGALLERY_PUBLIC_BASE_URL || "https://photos.alazab.com";
 }
 
+/**
+ * Best-effort notification after a public client adds a comment.
+ * This must never block the visitor journey: if the webhook is missing or fails,
+ * the comment remains saved and the UI still succeeds.
+ */
 export async function notifyCommentCreated(payload: Omit<CommentNotificationPayload, "event">) {
   const webhookUrl = process.env.AZGALLERY_COMMENT_WEBHOOK_URL;
   if (!webhookUrl) {
