@@ -20,6 +20,10 @@ test -f package.json || { echo "ERROR: package.json missing"; exit 1; }
 test -f index.html || { echo "ERROR: index.html missing at project root"; exit 1; }
 test -d public || { echo "ERROR: public directory missing"; exit 1; }
 
+if [ -z "${AZGALLERY_COMMENT_WEBHOOK_URL:-}" ]; then
+  echo "WARN: AZGALLERY_COMMENT_WEBHOOK_URL is not set; comments will be saved but notifications will be skipped."
+fi
+
 log "Install dependencies"
 if ! command -v pnpm >/dev/null 2>&1; then
   corepack enable
@@ -87,11 +91,17 @@ server {
     include /etc/letsencrypt/options-ssl-nginx.conf;
     ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
 
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+
     location ~* \\.(js|css|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|ttf|eot|json|xml|txt|webmanifest|html)$ {
         try_files \$uri @azgallery_pm2;
         expires 30d;
         access_log off;
-        add_header Cache-Control "public, max-age=2592000, immutable";
+        add_header Cache-Control "public, max-age=2592000, immutable" always;
     }
 
     location / {
