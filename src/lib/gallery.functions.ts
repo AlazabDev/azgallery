@@ -176,28 +176,32 @@ export const addComment = createServerFn({ method: "POST" })
       .single();
     if (error) publicError("Unable to save comment.", error);
 
-    const { notifyCommentCreated } = await import("@/lib/comment-notifications.server");
-    await notifyCommentCreated({
-      comment: {
-        id: inserted.id,
-        text: inserted.comment_text,
-        visitor_name: inserted.visitor_name,
-        position_x: inserted.position_x,
-        position_y: inserted.position_y,
-        created_at: inserted.created_at,
-      },
-      project: {
-        id: proj.id,
-        slug: proj.slug,
-        name: proj.name,
-        url: "",
-      },
-      image: {
-        id: img.id,
-        url: img.image_url,
-        caption: img.caption,
-      },
-    });
+    try {
+      const { notifyCommentCreated } = await import("@/lib/comment-notifications.server");
+      await notifyCommentCreated({
+        comment: {
+          id: inserted.id,
+          text: inserted.comment_text,
+          visitor_name: inserted.visitor_name,
+          position_x: inserted.position_x,
+          position_y: inserted.position_y,
+          created_at: inserted.created_at,
+        },
+        project: {
+          id: proj.id,
+          slug: proj.slug,
+          name: proj.name,
+          url: "",
+        },
+        image: {
+          id: img.id,
+          url: img.image_url,
+          caption: img.caption,
+        },
+      });
+    } catch (notificationError) {
+      console.error("[AzGallery] Comment notification failed after save", notificationError);
+    }
 
     return { comment: inserted };
   });
