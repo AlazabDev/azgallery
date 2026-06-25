@@ -20,6 +20,10 @@ test -f package.json || { echo "ERROR: package.json missing"; exit 1; }
 test -f index.html || { echo "ERROR: index.html missing at project root"; exit 1; }
 test -d public || { echo "ERROR: public directory missing"; exit 1; }
 
+if [ -z "${AZGALLERY_COMMENT_WEBHOOK_URL:-}" ]; then
+  echo "WARN: AZGALLERY_COMMENT_WEBHOOK_URL is not set; comments will be saved but notifications will be skipped."
+fi
+
 log "Install dependencies"
 if ! command -v pnpm >/dev/null 2>&1; then
   corepack enable
