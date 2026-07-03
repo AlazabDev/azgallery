@@ -63,7 +63,7 @@ export const listProjects = createServerFn({ method: "GET" }).handler(async () =
 });
 
 export const getProject = createServerFn({ method: "GET" })
-  .validator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .inputValidator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: project, error } = await supabaseAdmin
@@ -99,7 +99,7 @@ export const getProject = createServerFn({ method: "GET" })
   });
 
 export const getImageComments = createServerFn({ method: "GET" })
-  .validator((d: { imageId: string }) =>
+  .inputValidator((d: { imageId: string }) =>
     z.object({ imageId: z.string().uuid() }).parse(d),
   )
   .handler(async ({ data }) => {
@@ -126,7 +126,7 @@ const commentSchema = z.object({
 });
 
 export const addComment = createServerFn({ method: "POST" })
-  .validator((d: unknown) => commentSchema.parse(d))
+  .inputValidator((d: unknown) => commentSchema.parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
