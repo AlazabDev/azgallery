@@ -19,15 +19,9 @@ function publicError(message: string, error: unknown): never {
   throw new Error(message);
 }
 
-const publicProjectSelect = [
-  "id",
-  "slug",
-  "name",
-  "description",
-  "location",
-  "cover_image_url",
-  "created_at",
-].join(", ");
+const publicProjectSelect =
+  "id, slug, name, description, location, cover_image_url, created_at" as const;
+
 
 export const listProjects = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
