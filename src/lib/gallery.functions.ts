@@ -104,6 +104,17 @@ export const getImageComments = createServerFn({ method: "GET" })
   )
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    // Verify the image belongs to a public project before returning comments
+    const { data: img, error: imgError } = await supabaseAdmin
+      .from("project_images")
+      .select("id, projects!inner(is_public)")
+      .eq("id", data.imageId)
+      .eq("projects.is_public", true)
+      .maybeSingle();
+    if (imgError) publicError("Unable to verify image.", imgError);
+    if (!img) return { comments: [] };
+
     const { data: comments, error } = await supabaseAdmin
       .from("image_comments")
       .select("id, visitor_name, comment_text, position_x, position_y, status, created_at")
