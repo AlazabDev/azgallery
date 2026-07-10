@@ -1,13 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { getHeader } from "@tanstack/react-start/server";
-
-function requireAdmin() {
-  const provided = getHeader("x-admin-key");
-  const expected = process.env.AZGALLERY_ADMIN_KEY;
-  if (!expected) throw new Error("Admin key not configured.");
-  if (!provided || provided !== expected) throw new Error("Unauthorized.");
-}
 
 function fail(msg: string, err: unknown): never {
   console.error(`[AzGallery admin] ${msg}`, err);
