@@ -6,21 +6,23 @@ function fail(msg: string, err: unknown): never {
   throw new Error(msg);
 }
 
+function requireAdmin(adminKey: string) {
+  if (adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+}
+
 const keyInput = z.object({ adminKey: z.string().min(8) });
 
 export const adminVerify = createServerFn({ method: "POST" })
   .validator((d: unknown) => keyInput.parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) {
-      throw new Error("Invalid admin key.");
-    }
+    requireAdmin(data.adminKey);
     return { ok: true };
   });
 
 export const adminOverview = createServerFn({ method: "POST" })
   .validator((d: unknown) => keyInput.parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+    requireAdmin(data.adminKey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const [{ count: projectCount }, { count: publicCount }, { count: imageCount }, { count: openComments }, { count: totalComments }] = await Promise.all([
       supabaseAdmin.from("projects").select("*", { count: "exact", head: true }),
@@ -42,7 +44,7 @@ export const adminOverview = createServerFn({ method: "POST" })
 export const adminListProjects = createServerFn({ method: "POST" })
   .validator((d: unknown) => keyInput.parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+    requireAdmin(data.adminKey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: projects, error } = await supabaseAdmin
       .from("projects")
@@ -89,7 +91,7 @@ const projectInput = z.object({
 export const adminUpsertProject = createServerFn({ method: "POST" })
   .validator((d: unknown) => projectInput.parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+    requireAdmin(data.adminKey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const row = {
       slug: data.slug,
@@ -115,7 +117,7 @@ export const adminUpsertProject = createServerFn({ method: "POST" })
 export const adminDeleteProject = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+    requireAdmin(data.adminKey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin.from("image_comments").delete().eq("project_id", data.id);
     await supabaseAdmin.from("project_images").delete().eq("project_id", data.id);
@@ -127,7 +129,7 @@ export const adminDeleteProject = createServerFn({ method: "POST" })
 export const adminListImages = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ adminKey: z.string().min(8), projectId: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+    requireAdmin(data.adminKey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: images, error } = await supabaseAdmin
       .from("project_images")
@@ -152,7 +154,7 @@ const imageInput = z.object({
 export const adminUpsertImage = createServerFn({ method: "POST" })
   .validator((d: unknown) => imageInput.parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+    requireAdmin(data.adminKey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const row = {
       project_id: data.project_id,
@@ -177,7 +179,7 @@ export const adminUpsertImage = createServerFn({ method: "POST" })
 export const adminDeleteImage = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+    requireAdmin(data.adminKey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     await supabaseAdmin.from("image_comments").delete().eq("image_id", data.id);
     const { error } = await supabaseAdmin.from("project_images").delete().eq("id", data.id);
@@ -193,7 +195,7 @@ export const adminBulkImportImages = createServerFn({ method: "POST" })
     phase: z.enum(["start", "execution", "finishing", "delivery"]).optional().nullable(),
   }).parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+    requireAdmin(data.adminKey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: existing } = await supabaseAdmin
       .from("project_images").select("sort_order").eq("project_id", data.projectId)
@@ -210,13 +212,100 @@ export const adminBulkImportImages = createServerFn({ method: "POST" })
     return { inserted: count ?? rows.length };
   });
 
+type CloudinaryResource = {
+  public_id: string;
+  secure_url: string;
+  folder?: string;
+  filename?: string;
+  format?: string;
+  width?: number;
+  height?: number;
+  bytes?: number;
+  created_at?: string;
+};
+
+const cloudinaryListInput = z.object({
+  adminKey: z.string().min(8),
+  prefix: z.string().trim().max(300).optional().default(""),
+  maxResults: z.number().int().min(1).max(100).optional().default(50),
+});
+
+function requireCloudinaryConfig() {
+  const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+  const apiKey = process.env.CLOUDINARY_API_KEY;
+  const apiSecret = process.env.CLOUDINARY_API_SECRET;
+  const missing = [
+    ...(!cloudName ? ["CLOUDINARY_CLOUD_NAME"] : []),
+    ...(!apiKey ? ["CLOUDINARY_API_KEY"] : []),
+    ...(!apiSecret ? ["CLOUDINARY_API_SECRET"] : []),
+  ];
+  if (missing.length) throw new Error(`Missing Cloudinary environment variable(s): ${missing.join(", ")}.`);
+  return { cloudName, apiKey, apiSecret };
+}
+
+function addCloudinaryTransform(url: string, transform: string) {
+  const marker = "/upload/";
+  if (!url.includes(marker)) return url;
+  return url.replace(marker, `${marker}${transform}/`);
+}
+
+export const adminListCloudinaryImages = createServerFn({ method: "POST" })
+  .validator((d: unknown) => cloudinaryListInput.parse(d))
+  .handler(async ({ data }) => {
+    requireAdmin(data.adminKey);
+    const { cloudName, apiKey, apiSecret } = requireCloudinaryConfig();
+    const params = new URLSearchParams({
+      max_results: String(data.maxResults),
+      direction: "desc",
+    });
+    if (data.prefix) params.set("prefix", data.prefix);
+
+    const response = await fetch(
+      `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/resources/image/upload?${params.toString()}`,
+      {
+        headers: {
+          Authorization: `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
+        },
+      },
+    );
+
+    const payload = await response.json() as {
+      resources?: CloudinaryResource[];
+      next_cursor?: string;
+      error?: { message?: string };
+    };
+
+    if (!response.ok) {
+      throw new Error(payload.error?.message || `Cloudinary request failed with status ${response.status}.`);
+    }
+
+    const images = (payload.resources ?? []).map((resource) => {
+      const filename = resource.filename || resource.public_id.split("/").pop() || resource.public_id;
+      return {
+        public_id: resource.public_id,
+        filename,
+        folder: resource.folder ?? "",
+        original_url: resource.secure_url,
+        display_url: addCloudinaryTransform(resource.secure_url, "f_auto,q_auto,c_limit,w_1800"),
+        thumbnail_url: addCloudinaryTransform(resource.secure_url, "f_auto,q_auto,c_fill,w_360,h_360"),
+        format: resource.format ?? "",
+        width: resource.width ?? null,
+        height: resource.height ?? null,
+        bytes: resource.bytes ?? null,
+        created_at: resource.created_at ?? null,
+      };
+    });
+
+    return { images, nextCursor: payload.next_cursor ?? null };
+  });
+
 export const adminListComments = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({
     adminKey: z.string().min(8),
     status: z.enum(["open", "resolved", "all"]).default("all"),
   }).parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+    requireAdmin(data.adminKey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     let q = supabaseAdmin.from("image_comments")
       .select("id, image_id, project_id, visitor_name, visitor_phone, comment_text, position_x, position_y, status, created_at, projects!inner(name, slug)")
@@ -235,7 +324,7 @@ export const adminSetCommentStatus = createServerFn({ method: "POST" })
     status: z.enum(["open", "resolved"]),
   }).parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+    requireAdmin(data.adminKey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("image_comments").update({ status: data.status }).eq("id", data.id);
     if (error) fail("Unable to update comment.", error);
@@ -245,7 +334,7 @@ export const adminSetCommentStatus = createServerFn({ method: "POST" })
 export const adminDeleteComment = createServerFn({ method: "POST" })
   .validator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
-    if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
+    requireAdmin(data.adminKey);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { error } = await supabaseAdmin.from("image_comments").delete().eq("id", data.id);
     if (error) fail("Unable to delete comment.", error);
