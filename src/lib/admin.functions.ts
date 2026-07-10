@@ -253,4 +253,3 @@ export const adminDeleteComment = createServerFn({ method: "POST" })
   });
 
 // Suppress unused import in some environments
-void requireAdmin;
