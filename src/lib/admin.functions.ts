@@ -9,7 +9,7 @@ function fail(msg: string, err: unknown): never {
 const keyInput = z.object({ adminKey: z.string().min(8) });
 
 export const adminVerify = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => keyInput.parse(d))
+  .validator((d: unknown) => keyInput.parse(d))
   .handler(async ({ data }) => {
     if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) {
       throw new Error("Invalid admin key.");
@@ -18,7 +18,7 @@ export const adminVerify = createServerFn({ method: "POST" })
   });
 
 export const adminOverview = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => keyInput.parse(d))
+  .validator((d: unknown) => keyInput.parse(d))
   .handler(async ({ data }) => {
     if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -40,7 +40,7 @@ export const adminOverview = createServerFn({ method: "POST" })
   });
 
 export const adminListProjects = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => keyInput.parse(d))
+  .validator((d: unknown) => keyInput.parse(d))
   .handler(async ({ data }) => {
     if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -87,7 +87,7 @@ const projectInput = z.object({
 });
 
 export const adminUpsertProject = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => projectInput.parse(d))
+  .validator((d: unknown) => projectInput.parse(d))
   .handler(async ({ data }) => {
     if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -113,7 +113,7 @@ export const adminUpsertProject = createServerFn({ method: "POST" })
   });
 
 export const adminDeleteProject = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
+  .validator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -125,7 +125,7 @@ export const adminDeleteProject = createServerFn({ method: "POST" })
   });
 
 export const adminListImages = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({ adminKey: z.string().min(8), projectId: z.string().uuid() }).parse(d))
+  .validator((d: unknown) => z.object({ adminKey: z.string().min(8), projectId: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -150,7 +150,7 @@ const imageInput = z.object({
 });
 
 export const adminUpsertImage = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => imageInput.parse(d))
+  .validator((d: unknown) => imageInput.parse(d))
   .handler(async ({ data }) => {
     if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -175,7 +175,7 @@ export const adminUpsertImage = createServerFn({ method: "POST" })
   });
 
 export const adminDeleteImage = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
+  .validator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -186,7 +186,7 @@ export const adminDeleteImage = createServerFn({ method: "POST" })
   });
 
 export const adminBulkImportImages = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({
+  .validator((d: unknown) => z.object({
     adminKey: z.string().min(8),
     projectId: z.string().uuid(),
     urls: z.array(z.string().trim().min(1)).min(1).max(500),
@@ -211,7 +211,7 @@ export const adminBulkImportImages = createServerFn({ method: "POST" })
   });
 
 export const adminListComments = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({
+  .validator((d: unknown) => z.object({
     adminKey: z.string().min(8),
     status: z.enum(["open", "resolved", "all"]).default("all"),
   }).parse(d))
@@ -229,7 +229,7 @@ export const adminListComments = createServerFn({ method: "POST" })
   });
 
 export const adminSetCommentStatus = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({
+  .validator((d: unknown) => z.object({
     adminKey: z.string().min(8),
     id: z.string().uuid(),
     status: z.enum(["open", "resolved"]),
@@ -243,7 +243,7 @@ export const adminSetCommentStatus = createServerFn({ method: "POST" })
   });
 
 export const adminDeleteComment = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
+  .validator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     if (data.adminKey !== process.env.AZGALLERY_ADMIN_KEY) throw new Error("Unauthorized.");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -251,5 +251,3 @@ export const adminDeleteComment = createServerFn({ method: "POST" })
     if (error) fail("Unable to delete comment.", error);
     return { ok: true };
   });
-
-// Suppress unused import in some environments
