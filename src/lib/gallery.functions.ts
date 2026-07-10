@@ -22,7 +22,6 @@ function publicError(message: string, error: unknown): never {
 const publicProjectSelect =
   "id, slug, name, description, location, cover_image_url, created_at" as const;
 
-
 export const listProjects = createServerFn({ method: "GET" }).handler(async () => {
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data: projects, error } = await supabaseAdmin
@@ -46,7 +45,7 @@ export const listProjects = createServerFn({ method: "GET" }).handler(async () =
     .select("project_id, status")
     .in("project_id", ids)
     .eq("status", "open");
-  if (commentsError) publicError("Unable to load comment counts.", commentsError);
+  if (commentsError) publicError("Unable to load comment counts.", error);
 
   const imgCount = new Map<string, number>();
   imgs?.forEach((i) => imgCount.set(i.project_id, (imgCount.get(i.project_id) ?? 0) + 1));
@@ -63,7 +62,7 @@ export const listProjects = createServerFn({ method: "GET" }).handler(async () =
 });
 
 export const getProject = createServerFn({ method: "GET" })
-  .inputValidator((d: { slug: string }) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .validator((d: unknown) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data: project, error } = await supabaseAdmin
@@ -99,7 +98,7 @@ export const getProject = createServerFn({ method: "GET" })
   });
 
 export const getImageComments = createServerFn({ method: "GET" })
-  .inputValidator((d: { imageId: string }) =>
+  .validator((d: unknown) =>
     z.object({ imageId: z.string().uuid() }).parse(d),
   )
   .handler(async ({ data }) => {
@@ -137,7 +136,7 @@ const commentSchema = z.object({
 });
 
 export const addComment = createServerFn({ method: "POST" })
-  .inputValidator((d: unknown) => commentSchema.parse(d))
+  .validator((d: unknown) => commentSchema.parse(d))
   .handler(async ({ data }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
