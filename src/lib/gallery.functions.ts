@@ -45,7 +45,7 @@ export const listProjects = createServerFn({ method: "GET" }).handler(async () =
     .select("project_id, status")
     .in("project_id", ids)
     .eq("status", "open");
-  if (commentsError) publicError("Unable to load comment counts.", error);
+  if (commentsError) publicError("Unable to load comment counts.", commentsError);
 
   const imgCount = new Map<string, number>();
   imgs?.forEach((i) => imgCount.set(i.project_id, (imgCount.get(i.project_id) ?? 0) + 1));
