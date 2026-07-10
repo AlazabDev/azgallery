@@ -3,9 +3,8 @@ module.exports = {
     {
       name: "azgallery",
       cwd: "/opt/azab-hub/azgallery",
-      script: "pnpm",
-      args: "start",
-      interpreter: "none",
+      script: ".output/server/index.mjs",
+      interpreter: "node",
       env: {
         NODE_ENV: "production",
         HOST: "127.0.0.1",
