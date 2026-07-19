@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useMemo, useState } from "react";
-import { Shield, LogOut, LayoutDashboard, FolderKanban, Image as ImageIcon, MessageSquare, Plus, Trash2, Pencil, RefreshCw, Save, X, Check, Upload, Eye, EyeOff, ExternalLink } from "lucide-react";
+import { Shield, LogOut, LayoutDashboard, FolderKanban, Image as ImageIcon, MessageSquare, Plus, Trash2, Pencil, RefreshCw, Save, X, Check, Upload, Eye, EyeOff, ExternalLink, Settings as SettingsIcon } from "lucide-react";
 import {
   adminVerify, adminOverview, adminListProjects, adminUpsertProject, adminDeleteProject,
   adminListImages, adminUpsertImage, adminDeleteImage, adminBulkImportImages,
   adminListComments, adminSetCommentStatus, adminDeleteComment,
+  adminGetSettings, adminUpdateSettings,
 } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/admin")({
