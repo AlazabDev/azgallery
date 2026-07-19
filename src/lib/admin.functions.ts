@@ -340,3 +340,51 @@ export const adminDeleteComment = createServerFn({ method: "POST" })
     if (error) fail("Unable to delete comment.", error);
     return { ok: true };
   });
+
+/* ----------------------------- SETTINGS ----------------------------- */
+const settingsSchema = z.object({
+  adminKey: z.string().min(8),
+  comments_enabled: z.boolean(),
+  positional_comments_enabled: z.boolean(),
+  require_visitor_phone: z.boolean(),
+  default_grid_columns: z.number().int().min(1).max(8),
+  lightbox_autoplay: z.boolean(),
+  lightbox_show_thumbnails: z.boolean(),
+  show_phase_badges: z.boolean(),
+  show_capture_date: z.boolean(),
+  gallery_intro: z.string().max(2000).nullable().optional(),
+});
+
+export const adminGetSettings = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => keyInput.parse(d))
+  .handler(async ({ data }) => {
+    requireAdmin(data.adminKey);
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
+    const { data: settings, error } = await supabaseAdmin
+      .from("gallery_settings").select("*").eq("id", "default").maybeSingle();
+    if (error) fail("Unable to load settings.", error);
+    return { settings };
+  });
+
+export const adminUpdateSettings = createServerFn({ method: "POST" })
+  .inputValidator((d: unknown) => settingsSchema.parse(d))
+  .handler(async ({ data }) => {
+    requireAdmin(data.adminKey);
+    const { adminKey: _k, ...patch } = data;
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
+    const { data: settings, error } = await supabaseAdmin
+      .from("gallery_settings")
+      .update({ ...patch, updated_at: new Date().toISOString() })
+      .eq("id", "default")
+      .select("*")
+      .single();
+    if (error) fail("Unable to update settings.", error);
+    return { settings };
+  });
+
+export const getGallerySettings = createServerFn({ method: "GET" }).handler(async () => {
+  const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
+  const { data: settings } = await supabaseAdmin
+    .from("gallery_settings").select("*").eq("id", "default").maybeSingle();
+  return { settings };
+});
