@@ -14,137 +14,306 @@ export type Database = {
   }
   public: {
     Tables: {
-      image_comments: {
+      attachments: {
         Row: {
-          comment_text: string
-          created_at: string
+          created_at: string | null
+          file_name: string
+          file_path: string
+          file_size: number | null
+          file_type: string | null
           id: string
-          image_id: string
-          position_x: number | null
-          position_y: number | null
-          project_id: string
-          status: string
-          visitor_name: string
-          visitor_phone: string | null
-          visitor_session: string | null
+          message_id: string | null
+          request_id: string | null
+          uploaded_by: string
         }
         Insert: {
-          comment_text: string
-          created_at?: string
+          created_at?: string | null
+          file_name: string
+          file_path: string
+          file_size?: number | null
+          file_type?: string | null
           id?: string
-          image_id: string
-          position_x?: number | null
-          position_y?: number | null
-          project_id: string
-          status?: string
-          visitor_name: string
-          visitor_phone?: string | null
-          visitor_session?: string | null
+          message_id?: string | null
+          request_id?: string | null
+          uploaded_by: string
         }
         Update: {
-          comment_text?: string
-          created_at?: string
+          created_at?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number | null
+          file_type?: string | null
           id?: string
-          image_id?: string
-          position_x?: number | null
-          position_y?: number | null
-          project_id?: string
-          status?: string
-          visitor_name?: string
-          visitor_phone?: string | null
-          visitor_session?: string | null
+          message_id?: string | null
+          request_id?: string | null
+          uploaded_by?: string
         }
         Relationships: [
           {
-            foreignKeyName: "image_comments_image_id_fkey"
-            columns: ["image_id"]
+            foreignKeyName: "attachments_message_id_fkey"
+            columns: ["message_id"]
             isOneToOne: false
-            referencedRelation: "project_images"
+            referencedRelation: "messages"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "image_comments_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: "attachments_request_id_fkey"
+            columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "projects"
+            referencedRelation: "maintenance_requests"
             referencedColumns: ["id"]
           },
         ]
       }
-      project_images: {
+      maintenance_requests: {
         Row: {
-          caption: string | null
-          captured_at: string | null
-          created_at: string
+          created_at: string | null
+          description: string
           id: string
-          image_url: string
-          phase: string | null
-          project_id: string
-          sort_order: number
+          location: string | null
+          preferred_date: string | null
+          priority: string | null
+          service_type: string
+          status: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
-          caption?: string | null
-          captured_at?: string | null
-          created_at?: string
+          created_at?: string | null
+          description: string
           id?: string
-          image_url: string
-          phase?: string | null
-          project_id: string
-          sort_order?: number
+          location?: string | null
+          preferred_date?: string | null
+          priority?: string | null
+          service_type: string
+          status?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
-          caption?: string | null
-          captured_at?: string | null
-          created_at?: string
+          created_at?: string | null
+          description?: string
           id?: string
-          image_url?: string
-          phase?: string | null
-          project_id?: string
-          sort_order?: number
+          location?: string | null
+          preferred_date?: string | null
+          priority?: string | null
+          service_type?: string
+          status?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          message_type: string | null
+          request_id: string | null
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          message_type?: string | null
+          request_id?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          message_type?: string | null
+          request_id?: string | null
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "project_images_project_id_fkey"
-            columns: ["project_id"]
+            foreignKeyName: "messages_request_id_fkey"
+            columns: ["request_id"]
             isOneToOne: false
-            referencedRelation: "projects"
+            referencedRelation: "maintenance_requests"
             referencedColumns: ["id"]
           },
         ]
       }
-      projects: {
+      notifications: {
         Row: {
-          cover_image_url: string | null
-          created_at: string
+          created_at: string | null
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          type: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          type?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          type?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          address: string | null
+          city: string | null
+          created_at: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          role: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          created_at?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          role?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      quotes: {
+        Row: {
+          additional_services: string | null
+          area: number | null
+          budget_max: number | null
+          budget_min: number | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string | null
           description: string | null
           id: string
-          is_public: boolean
-          location: string | null
-          name: string
-          slug: string
-          updated_at: string
+          project_type: string
+          request_id: string | null
+          status: string | null
+          timeline: string | null
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
-          cover_image_url?: string | null
-          created_at?: string
+          additional_services?: string | null
+          area?: number | null
+          budget_max?: number | null
+          budget_min?: number | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
           description?: string | null
           id?: string
-          is_public?: boolean
-          location?: string | null
-          name: string
-          slug: string
-          updated_at?: string
+          project_type: string
+          request_id?: string | null
+          status?: string | null
+          timeline?: string | null
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
-          cover_image_url?: string | null
-          created_at?: string
+          additional_services?: string | null
+          area?: number | null
+          budget_max?: number | null
+          budget_min?: number | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string | null
           description?: string | null
           id?: string
-          is_public?: boolean
-          location?: string | null
-          name?: string
-          slug?: string
-          updated_at?: string
+          project_type?: string
+          request_id?: string | null
+          status?: string | null
+          timeline?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quotes_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          id: string
+          rating: number | null
+          request_id: string | null
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          request_id?: string | null
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          id?: string
+          rating?: number | null
+          request_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "maintenance_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      supcloud_keepalive: {
+        Row: {
+          id: number
+          marker: string
+        }
+        Insert: {
+          id: number
+          marker?: string
+        }
+        Update: {
+          id?: number
+          marker?: string
         }
         Relationships: []
       }
