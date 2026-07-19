@@ -13,17 +13,17 @@ function requireAdmin(adminKey: string) {
 const keyInput = z.object({ adminKey: z.string().min(8) });
 
 export const adminVerify = createServerFn({ method: "POST" })
-  .validator((d: unknown) => keyInput.parse(d))
+  .inputValidator((d: unknown) => keyInput.parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
     return { ok: true };
   });
 
 export const adminOverview = createServerFn({ method: "POST" })
-  .validator((d: unknown) => keyInput.parse(d))
+  .inputValidator((d: unknown) => keyInput.parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     const [{ count: projectCount }, { count: publicCount }, { count: imageCount }, { count: openComments }, { count: totalComments }] = await Promise.all([
       supabaseAdmin.from("projects").select("*", { count: "exact", head: true }),
       supabaseAdmin.from("projects").select("*", { count: "exact", head: true }).eq("is_public", true),
@@ -42,10 +42,10 @@ export const adminOverview = createServerFn({ method: "POST" })
   });
 
 export const adminListProjects = createServerFn({ method: "POST" })
-  .validator((d: unknown) => keyInput.parse(d))
+  .inputValidator((d: unknown) => keyInput.parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     const { data: projects, error } = await supabaseAdmin
       .from("projects")
       .select("id, slug, name, description, location, cover_image_url, is_public, created_at, updated_at")
@@ -89,10 +89,10 @@ const projectInput = z.object({
 });
 
 export const adminUpsertProject = createServerFn({ method: "POST" })
-  .validator((d: unknown) => projectInput.parse(d))
+  .inputValidator((d: unknown) => projectInput.parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     const row = {
       slug: data.slug,
       name: data.name,
@@ -115,10 +115,10 @@ export const adminUpsertProject = createServerFn({ method: "POST" })
   });
 
 export const adminDeleteProject = createServerFn({ method: "POST" })
-  .validator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
+  .inputValidator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     await supabaseAdmin.from("image_comments").delete().eq("project_id", data.id);
     await supabaseAdmin.from("project_images").delete().eq("project_id", data.id);
     const { error } = await supabaseAdmin.from("projects").delete().eq("id", data.id);
@@ -127,10 +127,10 @@ export const adminDeleteProject = createServerFn({ method: "POST" })
   });
 
 export const adminListImages = createServerFn({ method: "POST" })
-  .validator((d: unknown) => z.object({ adminKey: z.string().min(8), projectId: z.string().uuid() }).parse(d))
+  .inputValidator((d: unknown) => z.object({ adminKey: z.string().min(8), projectId: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     const { data: images, error } = await supabaseAdmin
       .from("project_images")
       .select("id, project_id, image_url, caption, sort_order, captured_at, phase, created_at")
@@ -152,10 +152,10 @@ const imageInput = z.object({
 });
 
 export const adminUpsertImage = createServerFn({ method: "POST" })
-  .validator((d: unknown) => imageInput.parse(d))
+  .inputValidator((d: unknown) => imageInput.parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     const row = {
       project_id: data.project_id,
       image_url: data.image_url,
@@ -177,10 +177,10 @@ export const adminUpsertImage = createServerFn({ method: "POST" })
   });
 
 export const adminDeleteImage = createServerFn({ method: "POST" })
-  .validator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
+  .inputValidator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     await supabaseAdmin.from("image_comments").delete().eq("image_id", data.id);
     const { error } = await supabaseAdmin.from("project_images").delete().eq("id", data.id);
     if (error) fail("Unable to delete image.", error);
@@ -188,7 +188,7 @@ export const adminDeleteImage = createServerFn({ method: "POST" })
   });
 
 export const adminBulkImportImages = createServerFn({ method: "POST" })
-  .validator((d: unknown) => z.object({
+  .inputValidator((d: unknown) => z.object({
     adminKey: z.string().min(8),
     projectId: z.string().uuid(),
     urls: z.array(z.string().trim().min(1)).min(1).max(500),
@@ -196,7 +196,7 @@ export const adminBulkImportImages = createServerFn({ method: "POST" })
   }).parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     const { data: existing } = await supabaseAdmin
       .from("project_images").select("sort_order").eq("project_id", data.projectId)
       .order("sort_order", { ascending: false }).limit(1);
@@ -250,7 +250,7 @@ function addCloudinaryTransform(url: string, transform: string) {
 }
 
 export const adminListCloudinaryImages = createServerFn({ method: "POST" })
-  .validator((d: unknown) => cloudinaryListInput.parse(d))
+  .inputValidator((d: unknown) => cloudinaryListInput.parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
     const { cloudName, apiKey, apiSecret } = requireCloudinaryConfig();
@@ -300,13 +300,13 @@ export const adminListCloudinaryImages = createServerFn({ method: "POST" })
   });
 
 export const adminListComments = createServerFn({ method: "POST" })
-  .validator((d: unknown) => z.object({
+  .inputValidator((d: unknown) => z.object({
     adminKey: z.string().min(8),
     status: z.enum(["open", "resolved", "all"]).default("all"),
   }).parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     let q = supabaseAdmin.from("image_comments")
       .select("id, image_id, project_id, visitor_name, visitor_phone, comment_text, position_x, position_y, status, created_at, projects!inner(name, slug)")
       .order("created_at", { ascending: false })
@@ -318,24 +318,24 @@ export const adminListComments = createServerFn({ method: "POST" })
   });
 
 export const adminSetCommentStatus = createServerFn({ method: "POST" })
-  .validator((d: unknown) => z.object({
+  .inputValidator((d: unknown) => z.object({
     adminKey: z.string().min(8),
     id: z.string().uuid(),
     status: z.enum(["open", "resolved"]),
   }).parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     const { error } = await supabaseAdmin.from("image_comments").update({ status: data.status }).eq("id", data.id);
     if (error) fail("Unable to update comment.", error);
     return { ok: true };
   });
 
 export const adminDeleteComment = createServerFn({ method: "POST" })
-  .validator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
+  .inputValidator((d: unknown) => z.object({ adminKey: z.string().min(8), id: z.string().uuid() }).parse(d))
   .handler(async ({ data }) => {
     requireAdmin(data.adminKey);
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     const { error } = await supabaseAdmin.from("image_comments").delete().eq("id", data.id);
     if (error) fail("Unable to delete comment.", error);
     return { ok: true };
