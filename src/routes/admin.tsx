@@ -86,6 +86,7 @@ function Dashboard({ adminKey, onLogout }: { adminKey: string; onLogout: () => v
     { id: "projects", label: "المشروعات", icon: FolderKanban },
     { id: "images", label: "الصور", icon: ImageIcon },
     { id: "comments", label: "الملاحظات", icon: MessageSquare },
+    { id: "settings", label: "الإعدادات", icon: SettingsIcon },
   ];
 
   return (
