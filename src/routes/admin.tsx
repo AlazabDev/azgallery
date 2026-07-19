@@ -21,7 +21,7 @@ export const Route = createFileRoute("/admin")({
 });
 
 const KEY_STORAGE = "azgallery_admin_key";
-type Tab = "overview" | "projects" | "images" | "comments";
+type Tab = "overview" | "projects" | "images" | "comments" | "settings";
 
 function AdminPage() {
   const [adminKey, setAdminKey] = useState<string>("");
