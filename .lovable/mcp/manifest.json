@@ -1,0 +1,101 @@
+{
+  "version": 1,
+  "sdk_version": "0.23.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "azgallery-mcp",
+      "version": "0.1.0",
+      "title": "AzGallery — Alazab Construction Projects"
+    },
+    "tools": [
+      {
+        "name": "list_projects",
+        "title": "List public projects",
+        "description": "List all public projects in the AzGallery construction gallery. Returns slug, name, location, description, cover image URL, and creation date for each project.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {}
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "get_project",
+        "title": "Get project details",
+        "description": "Fetch a single public project by its slug, along with every image in the project. Images include URL, caption, capture date, and construction phase (start / execution / finishing / delivery).",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "description": "The project's URL slug (as returned by list_projects)."
+            }
+          },
+          "required": [
+            "slug"
+          ]
+        },
+        "outputSchema": null
+      },
+      {
+        "name": "list_project_images",
+        "title": "List project images by phase",
+        "description": "List images for a public project, optionally filtered by construction phase. Useful for building a timeline view of a project's progress.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "slug": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120,
+              "description": "The project's URL slug."
+            },
+            "phase": {
+              "description": "Optional construction phase filter.",
+              "type": "string",
+              "enum": [
+                "start",
+                "execution",
+                "finishing",
+                "delivery"
+              ]
+            },
+            "limit": {
+              "description": "Max images to return (default 100).",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 200
+            }
+          },
+          "required": [
+            "slug"
+          ]
+        },
+        "outputSchema": null
+      }
+    ]
+  }
+}
