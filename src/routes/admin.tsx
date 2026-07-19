@@ -121,6 +121,7 @@ function Dashboard({ adminKey, onLogout }: { adminKey: string; onLogout: () => v
         {tab === "projects" && <ProjectsTab adminKey={adminKey} />}
         {tab === "images" && <ImagesTab adminKey={adminKey} />}
         {tab === "comments" && <CommentsTab adminKey={adminKey} />}
+        {tab === "settings" && <SettingsTab adminKey={adminKey} />}
       </div>
     </div>
   );
