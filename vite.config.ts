@@ -1,4 +1,5 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
+import { mcpPlugin } from "@lovable.dev/mcp-js/stacks/tanstack/vite";
 
 const allowedHosts = ["photos.alazab.com"];
 
@@ -7,6 +8,7 @@ export default defineConfig({
     server: { entry: "server" },
   },
   vite: {
+    plugins: [mcpPlugin()],
     server: {
       allowedHosts,
     },
