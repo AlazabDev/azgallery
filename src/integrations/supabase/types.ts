@@ -65,6 +65,48 @@ export type Database = {
           },
         ]
       }
+      gallery_settings: {
+        Row: {
+          comments_enabled: boolean
+          default_grid_columns: number
+          gallery_intro: string | null
+          id: string
+          lightbox_autoplay: boolean
+          lightbox_show_thumbnails: boolean
+          positional_comments_enabled: boolean
+          require_visitor_phone: boolean
+          show_capture_date: boolean
+          show_phase_badges: boolean
+          updated_at: string
+        }
+        Insert: {
+          comments_enabled?: boolean
+          default_grid_columns?: number
+          gallery_intro?: string | null
+          id?: string
+          lightbox_autoplay?: boolean
+          lightbox_show_thumbnails?: boolean
+          positional_comments_enabled?: boolean
+          require_visitor_phone?: boolean
+          show_capture_date?: boolean
+          show_phase_badges?: boolean
+          updated_at?: string
+        }
+        Update: {
+          comments_enabled?: boolean
+          default_grid_columns?: number
+          gallery_intro?: string | null
+          id?: string
+          lightbox_autoplay?: boolean
+          lightbox_show_thumbnails?: boolean
+          positional_comments_enabled?: boolean
+          require_visitor_phone?: boolean
+          show_capture_date?: boolean
+          show_phase_badges?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
       maintenance_requests: {
         Row: {
           created_at: string | null

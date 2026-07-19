@@ -140,6 +140,13 @@ export const addComment = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
 
+    const { data: settings } = await supabaseAdmin
+      .from("gallery_settings").select("comments_enabled, positional_comments_enabled, require_visitor_phone").eq("id", "default").maybeSingle();
+    if (settings && settings.comments_enabled === false) throw new Error("Comments are currently disabled.");
+    const hasPosition = typeof data.positionX === "number" && typeof data.positionY === "number";
+    if (hasPosition && settings && settings.positional_comments_enabled === false) throw new Error("Positional comments are disabled.");
+    if (settings && settings.require_visitor_phone === true && !(data.visitorPhone && data.visitorPhone.trim())) throw new Error("Phone number is required.");
+
     if (!rateLimit(`c:${data.visitorSession}`, 5, 60_000)) {
       throw new Error("Too many comments. Please try again later.");
     }
