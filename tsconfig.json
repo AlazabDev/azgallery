@@ -8,7 +8,9 @@
     "src/router.tsx",
     "src/server.ts",
     "src/lib/admin.functions.ts",
-    "src/routes/admin.tsx"
+    "src/routes/admin.tsx",
+    "src/routes/projects.tsx",
+    "src/routes/project.$slug.tsx"
   ],
   "compilerOptions": {
     "target": "ES2022",
