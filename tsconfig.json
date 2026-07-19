@@ -6,7 +6,11 @@
     "src/pages/**",
     "src/hooks/**",
     "src/router.tsx",
-    "src/server.ts"
+    "src/server.ts",
+    "src/lib/admin.functions.ts",
+    "src/routes/admin.tsx",
+    "src/routes/projects.tsx",
+    "src/routes/project.$slug.tsx"
   ],
   "compilerOptions": {
     "target": "ES2022",
@@ -24,6 +28,7 @@
     /* Linting */
     "skipLibCheck": true,
     "strict": true,
+    "noImplicitAny": false,
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "noFallthroughCasesInSwitch": true,

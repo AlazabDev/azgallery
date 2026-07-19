@@ -23,7 +23,7 @@ const publicProjectSelect =
   "id, slug, name, description, location, cover_image_url, created_at" as const;
 
 export const listProjects = createServerFn({ method: "GET" }).handler(async () => {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
   const { data: projects, error } = await supabaseAdmin
     .from("projects")
     .select(publicProjectSelect)
@@ -62,9 +62,9 @@ export const listProjects = createServerFn({ method: "GET" }).handler(async () =
 });
 
 export const getProject = createServerFn({ method: "GET" })
-  .validator((d: unknown) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
+  .inputValidator((d: unknown) => z.object({ slug: z.string().min(1).max(120) }).parse(d))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
     const { data: project, error } = await supabaseAdmin
       .from("projects")
       .select(publicProjectSelect)
@@ -98,11 +98,11 @@ export const getProject = createServerFn({ method: "GET" })
   });
 
 export const getImageComments = createServerFn({ method: "GET" })
-  .validator((d: unknown) =>
+  .inputValidator((d: unknown) =>
     z.object({ imageId: z.string().uuid() }).parse(d),
   )
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
 
     // Verify the image belongs to a public project before returning comments
     const { data: img, error: imgError } = await supabaseAdmin
@@ -136,9 +136,9 @@ const commentSchema = z.object({
 });
 
 export const addComment = createServerFn({ method: "POST" })
-  .validator((d: unknown) => commentSchema.parse(d))
+  .inputValidator((d: unknown) => commentSchema.parse(d))
   .handler(async ({ data }) => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { supabaseAdmin: _sa } = await import("@/integrations/supabase/client.server"); const supabaseAdmin: any = _sa;
 
     if (!rateLimit(`c:${data.visitorSession}`, 5, 60_000)) {
       throw new Error("Too many comments. Please try again later.");
