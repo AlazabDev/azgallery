@@ -261,7 +261,7 @@ export const adminListCloudinaryImages = createServerFn({ method: "POST" })
     if (data.prefix) params.set("prefix", data.prefix);
 
     const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/resources/image/upload?${params.toString()}`,
+      `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName!)}/resources/image/upload?${params.toString()}`,
       {
         headers: {
           Authorization: `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
