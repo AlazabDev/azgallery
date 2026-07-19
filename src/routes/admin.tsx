@@ -555,3 +555,131 @@ function Modal({ children, title, onClose }: { children: React.ReactNode; title:
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <label className="block"><span className="mb-1 block text-xs font-semibold text-muted-foreground">{label}</span>{children}</label>;
 }
+
+/* ----------------------------- SETTINGS ----------------------------- */
+type GallerySettings = {
+  comments_enabled: boolean;
+  positional_comments_enabled: boolean;
+  require_visitor_phone: boolean;
+  default_grid_columns: number;
+  lightbox_autoplay: boolean;
+  lightbox_show_thumbnails: boolean;
+  show_phase_badges: boolean;
+  show_capture_date: boolean;
+  gallery_intro: string | null;
+};
+
+const DEFAULT_SETTINGS: GallerySettings = {
+  comments_enabled: true,
+  positional_comments_enabled: true,
+  require_visitor_phone: false,
+  default_grid_columns: 4,
+  lightbox_autoplay: false,
+  lightbox_show_thumbnails: true,
+  show_phase_badges: true,
+  show_capture_date: true,
+  gallery_intro: "",
+};
+
+function SettingsTab({ adminKey }: { adminKey: string }) {
+  const get = useServerFn(adminGetSettings);
+  const update = useServerFn(adminUpdateSettings);
+  const [s, setS] = useState<GallerySettings>(DEFAULT_SETTINGS);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [msg, setMsg] = useState<{ type: "ok" | "err"; text: string } | null>(null);
+
+  async function load() {
+    setLoading(true); setMsg(null);
+    try {
+      const r = await get({ data: { adminKey } });
+      if (r.settings) setS({ ...DEFAULT_SETTINGS, ...r.settings, gallery_intro: r.settings.gallery_intro ?? "" });
+    } catch (e) { setMsg({ type: "err", text: e instanceof Error ? e.message : "خطأ" }); }
+    finally { setLoading(false); }
+  }
+  useEffect(() => { void load(); /* eslint-disable-next-line */ }, []);
+
+  async function save() {
+    setSaving(true); setMsg(null);
+    try {
+      await update({ data: { adminKey, ...s, gallery_intro: s.gallery_intro || null } });
+      setMsg({ type: "ok", text: "تم حفظ الإعدادات بنجاح." });
+    } catch (e) { setMsg({ type: "err", text: e instanceof Error ? e.message : "تعذر الحفظ" }); }
+    finally { setSaving(false); }
+  }
+
+  const Toggle = ({ label, hint, value, onChange }: { label: string; hint?: string; value: boolean; onChange: (v: boolean) => void }) => (
+    <div className="flex items-start justify-between gap-4 rounded-xl border border-border bg-card p-4">
+      <div className="min-w-0">
+        <div className="text-sm font-semibold">{label}</div>
+        {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}
+      </div>
+      <button type="button" onClick={() => onChange(!value)}
+        className={`relative h-6 w-11 shrink-0 rounded-full transition ${value ? "bg-[#030957]" : "bg-gray-300"}`}
+        aria-pressed={value}>
+        <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition ${value ? "right-0.5" : "right-[calc(100%-1.375rem)]"}`} />
+      </button>
+    </div>
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-xl font-bold">إعدادات ضبط المعرض</h2>
+          <p className="mt-1 text-sm text-muted-foreground">تحكّم في سلوك التعليقات وطريقة عرض الصور في المعرض.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button onClick={() => void load()} disabled={loading} className="inline-flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm hover:bg-muted">
+            <RefreshCw className={`size-4 ${loading ? "animate-spin" : ""}`} /> تحديث
+          </button>
+          <button onClick={() => void save()} disabled={saving || loading} className="inline-flex items-center gap-2 rounded-lg bg-[#030957] px-4 py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-60">
+            <Save className="size-4" /> {saving ? "جارٍ الحفظ..." : "حفظ الإعدادات"}
+          </button>
+        </div>
+      </div>
+
+      {msg && (
+        <div className={`rounded-lg border p-3 text-sm ${msg.type === "ok" ? "border-green-300 bg-green-50 text-green-800" : "border-red-300 bg-red-50 text-red-700"}`}>
+          {msg.text}
+        </div>
+      )}
+
+      <section>
+        <h3 className="mb-3 text-sm font-bold text-[#030957]">التعليقات</h3>
+        <div className="grid gap-3 md:grid-cols-2">
+          <Toggle label="تفعيل التعليقات" hint="السماح للزوار بإضافة ملاحظات على الصور." value={s.comments_enabled} onChange={(v) => setS({ ...s, comments_enabled: v })} />
+          <Toggle label="التعليقات الموضعية" hint="السماح بربط تعليق بموضع محدد داخل الصورة." value={s.positional_comments_enabled} onChange={(v) => setS({ ...s, positional_comments_enabled: v })} />
+          <Toggle label="اشتراط رقم الهاتف" hint="إلزام الزائر بإدخال رقم للتواصل قبل إرسال التعليق." value={s.require_visitor_phone} onChange={(v) => setS({ ...s, require_visitor_phone: v })} />
+        </div>
+      </section>
+
+      <section>
+        <h3 className="mb-3 text-sm font-bold text-[#030957]">عرض الصور</h3>
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="rounded-xl border border-border bg-card p-4">
+            <div className="text-sm font-semibold">أعمدة الشبكة الافتراضية</div>
+            <p className="mt-1 text-xs text-muted-foreground">عدد الأعمدة في شاشات سطح المكتب (1 - 8).</p>
+            <input type="number" min={1} max={8} value={s.default_grid_columns}
+              onChange={(e) => setS({ ...s, default_grid_columns: Math.min(8, Math.max(1, Number(e.target.value) || 4)) })}
+              className="mt-3 w-24 rounded-lg border border-border bg-background px-3 py-2 text-sm" />
+          </div>
+          <Toggle label="تشغيل تلقائي في صندوق العرض" hint="بدء عرض الصور تلقائيًا عند فتح lightGallery." value={s.lightbox_autoplay} onChange={(v) => setS({ ...s, lightbox_autoplay: v })} />
+          <Toggle label="إظهار الصور المصغرة في صندوق العرض" value={s.lightbox_show_thumbnails} onChange={(v) => setS({ ...s, lightbox_show_thumbnails: v })} />
+          <Toggle label="إظهار شارات المرحلة" hint="عرض شارة (بداية / تنفيذ / تشطيب / تسليم) على كل صورة." value={s.show_phase_badges} onChange={(v) => setS({ ...s, show_phase_badges: v })} />
+          <Toggle label="إظهار تاريخ الالتقاط" value={s.show_capture_date} onChange={(v) => setS({ ...s, show_capture_date: v })} />
+        </div>
+      </section>
+
+      <section>
+        <h3 className="mb-3 text-sm font-bold text-[#030957]">نص تعريفي للمعرض</h3>
+        <div className="rounded-xl border border-border bg-card p-4">
+          <p className="mb-2 text-xs text-muted-foreground">يظهر في أعلى صفحة المشروعات كنص ترحيبي (اختياري).</p>
+          <textarea value={s.gallery_intro ?? ""} onChange={(e) => setS({ ...s, gallery_intro: e.target.value })}
+            className="min-h-[120px] w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
+            placeholder="مرحبًا بكم في معرض مشروعات العزب..." />
+        </div>
+      </section>
+    </div>
+  );
+}
