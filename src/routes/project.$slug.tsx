@@ -140,7 +140,11 @@ function GalleryPanel({
     document.body.appendChild(wrap);
     const inst = lg(wrap, {
       dynamic: true,
-      dynamicEl: images.map((i) => ({ src: i.image_url, thumb: i.image_url, subHtml: i.caption ?? "" })),
+      dynamicEl: images.map((i) => ({
+        src: cldTransform(i.image_url, "f_auto,q_auto,c_limit,w_1920"),
+        thumb: cldTransform(i.image_url, "f_auto,q_auto,c_fill,g_auto,w_240,h_240"),
+        subHtml: i.caption ?? "",
+      })),
       download: false,
       counter: true,
     });
@@ -151,13 +155,19 @@ function GalleryPanel({
     });
   };
 
+  const activeResp = responsiveImage(active.image_url);
+
   return (
     <div className="space-y-4">
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
         <div ref={imgWrapRef} data-pick-target="active-image" className="relative aspect-[16/10] overflow-hidden bg-black">
           <img
-            src={active.image_url}
+            src={activeResp.src}
+            srcSet={activeResp.srcSet || undefined}
+            sizes={activeResp.sizes}
             alt={active.caption ?? ""}
+            loading="eager"
+            decoding="async"
             className="h-full w-full object-contain"
           />
           {markers.map((m, i) => (
