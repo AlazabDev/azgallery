@@ -252,7 +252,13 @@ function GalleryPanel({
                       idx === activeIdx ? "border-primary shadow-elevated" : "border-transparent opacity-70 hover:opacity-100"
                     }`}
                   >
-                    <img src={img.image_url} alt="" className="h-full w-full object-cover" />
+                    <img
+                      {...responsiveThumbnail(img.image_url, { size: 112 })}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                    />
                     {commentsByImage[img.id] > 0 && (
                       <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 rounded-md bg-accent/95 px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">
                         <MessageSquare className="size-2.5" /> {commentsByImage[img.id]}
