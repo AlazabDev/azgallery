@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { getProject, getImageComments, addComment } from "@/lib/gallery.functions";
 import { getVisitorSession, getStoredVisitor, saveVisitor } from "@/lib/visitor-session";
 import { ChevronRight, ChevronLeft, MessageSquare, MapPin, Expand, MapPinned, Send, X, ArrowRight, Calendar, Clock, Box, Paperclip, Link2, FileText } from "lucide-react";
+import { cldTransform, responsiveImage, responsiveThumbnail } from "@/lib/cloudinary-image";
 
 const PHASE_ORDER = ["البداية", "التنفيذ", "التشطيب", "التسليم"] as const;
 const PHASE_COLORS: Record<string, string> = {
@@ -140,7 +141,11 @@ function GalleryPanel({
     document.body.appendChild(wrap);
     const inst = lg(wrap, {
       dynamic: true,
-      dynamicEl: images.map((i) => ({ src: i.image_url, thumb: i.image_url, subHtml: i.caption ?? "" })),
+      dynamicEl: images.map((i) => ({
+        src: cldTransform(i.image_url, "f_auto,q_auto,c_limit,w_1920"),
+        thumb: cldTransform(i.image_url, "f_auto,q_auto,c_fill,g_auto,w_240,h_240"),
+        subHtml: i.caption ?? "",
+      })),
       download: false,
       counter: true,
     });
@@ -151,13 +156,19 @@ function GalleryPanel({
     });
   };
 
+  const activeResp = responsiveImage(active.image_url);
+
   return (
     <div className="space-y-4">
       <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-card">
         <div ref={imgWrapRef} data-pick-target="active-image" className="relative aspect-[16/10] overflow-hidden bg-black">
           <img
-            src={active.image_url}
+            src={activeResp.src}
+            srcSet={activeResp.srcSet || undefined}
+            sizes={activeResp.sizes}
             alt={active.caption ?? ""}
+            loading="eager"
+            decoding="async"
             className="h-full w-full object-contain"
           />
           {markers.map((m, i) => (
@@ -242,7 +253,13 @@ function GalleryPanel({
                       idx === activeIdx ? "border-primary shadow-elevated" : "border-transparent opacity-70 hover:opacity-100"
                     }`}
                   >
-                    <img src={img.image_url} alt="" className="h-full w-full object-cover" />
+                    <img
+                      {...responsiveThumbnail(img.image_url, { size: 112 })}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover"
+                    />
                     {commentsByImage[img.id] > 0 && (
                       <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 rounded-md bg-accent/95 px-1.5 py-0.5 text-[10px] font-bold text-accent-foreground">
                         <MessageSquare className="size-2.5" /> {commentsByImage[img.id]}
