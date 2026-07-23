@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "temp_cloudinary_import" ON public.project_images;
