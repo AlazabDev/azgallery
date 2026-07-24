@@ -64,7 +64,63 @@
   * { border-color: var(--color-border); }
   html, body { font-family: var(--font-sans); }
   body { background: var(--color-background); color: var(--color-foreground); }
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
+
+/* Skip-to-content link for keyboard users */
+.skip-link {
+  position: fixed;
+  top: -100px;
+  right: 1rem;
+  z-index: 100;
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  box-shadow: var(--shadow-elevated);
+  transition: top 0.2s;
+}
+.skip-link:focus { top: 1rem; }
+
+/* Brand splash loader */
+@keyframes az-splash-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.96); }
+  50% { opacity: 1; transform: scale(1.04); }
+}
+.az-splash {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #030957, #0b1470);
+  color: #FFB900;
+  z-index: 200;
+}
+.az-splash__mark {
+  font-family: var(--font-sans);
+  font-weight: 800;
+  font-size: 2rem;
+  letter-spacing: 0.05em;
+  animation: az-splash-pulse 1.6s ease-in-out infinite;
+}
+.az-splash__sub { color: #ffffffb3; margin-top: 0.5rem; font-size: 0.875rem; }
+
+/* Respect prefers-reduced-motion — disable decorative motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .az-splash__mark { animation: none; }
+}
+
 
 /* lightGallery overrides */
 .lg-backdrop { background-color: #0a0a0a !important; }
