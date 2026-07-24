@@ -98,9 +98,10 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
+      <a href="#main-content" className="skip-link">تجاوز إلى المحتوى</a>
       <div className="flex min-h-screen flex-col">
         <AppHeader />
-        <main className="flex-1">
+        <main id="main-content" tabIndex={-1} className="flex-1 focus:outline-none">
           <Outlet />
         </main>
         <AppFooter />
@@ -108,3 +109,4 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
+
