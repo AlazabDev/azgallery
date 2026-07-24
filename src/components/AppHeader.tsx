@@ -18,15 +18,14 @@ export function AppHeader() {
     <header className="sticky top-0 z-50 border-b bg-white/95 backdrop-blur-md shadow-sm">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 md:px-6">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 shrink-0">
-          <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#030957] text-white">
-            <Images className="h-5 w-5" />
-          </div>
+        <Link to="/" className="flex items-center gap-2 shrink-0 rounded-lg" aria-label="AzGallery — الرئيسية">
+          <img src="/alazab-icon.png" alt="" aria-hidden="true" className="h-9 w-9 rounded-lg bg-[#030957] p-1.5" />
           <div className="leading-tight">
             <span className="block text-lg font-extrabold text-[#030957]">AzGallery</span>
             <span className="hidden sm:block text-[10px] font-medium text-gray-500">معرض مراجعة مشروعات العزب</span>
           </div>
         </Link>
+
 
         {/* Desktop Search */}
         <form onSubmit={handleSearch} className="hidden md:flex flex-1 max-w-md mx-6">
