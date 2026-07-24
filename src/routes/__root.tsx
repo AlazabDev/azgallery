@@ -47,22 +47,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { name: "theme-color", content: "#030957" },
       { title: "AzGallery — معرض مراجعة مشروعات العزب" },
-      { name: "description", content: "AzGallery — منصة مراجعة صور مشروعات العزب وإضافة الملاحظات بشكل تفاعلي." },
-      { property: "og:title", content: "AzGallery — معرض مراجعة مشروعات العزب" },
-      { property: "og:description", content: "AzGallery — منصة مراجعة صور مشروعات العزب وإضافة الملاحظات بشكل تفاعلي." },
+      { name: "description", content: "منصة تفاعلية لعرض ومراجعة مشروعات شركة العزب بالصور عالية الدقة وإضافة الملاحظات على أي جزء من الصورة بدون تسجيل." },
+      { property: "og:site_name", content: "AzGallery" },
       { property: "og:type", content: "website" },
-      { name: "twitter:title", content: "AzGallery — معرض مراجعة مشروعات العزب" },
-      { name: "twitter:description", content: "AzGallery — منصة مراجعة صور مشروعات العزب وإضافة الملاحظات بشكل تفاعلي." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/eb59ad80-5995-476e-8186-cfb5ae3c2f56" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/eb59ad80-5995-476e-8186-cfb5ae3c2f56" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
+      { rel: "icon", href: "/favicon.png" },
+      { rel: "apple-touch-icon", href: "/alazab-icon.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
       { rel: "stylesheet", href: appCss },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
+      { rel: "preconnect", href: "https://res.cloudinary.com", crossOrigin: "" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap",
@@ -73,6 +73,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
     ],
   }),
+
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
